@@ -5,16 +5,26 @@
           <form autocomplete="off">
             <div class="user">
               <i></i>
-              <input type="text" name="user_name" id="user_name" value placeholder="用户名/邮箱/手机号">
-
+              <input 
+              type="text" 
+              name="user_name" 
+              id="user_name" 
+              value placeholder="用户名/邮箱/手机号"
+              v-model="inputUser"
+              >
               <p class="tip empty" id="err_msg">
                 <i></i>请输入用户名/邮箱/手机号
               </p>
             </div>
             <div class="pwd">
               <i></i>
-              <input type="password" name="password" id="pass" placeholder="密码">
-
+              <input 
+              type="password" 
+              name="password" 
+              id="pass" 
+              placeholder="密码"
+              v-model="inputPassword"
+              >
               <p class="tip">
                 <i></i>请输入密码
               </p>
@@ -25,7 +35,7 @@
                 <img
                   width="225px"
                   height="30px"
-                  alt
+                  
                   src="https://mlogin.jiuxian.com/captchaimg1?t=1564824515641"
                   id="captchaimg1_mobile"
                 >
@@ -40,7 +50,9 @@
               </div>
               <input type="hidden" name="verifyCode" id="imgCode2" value="1111">
             </div>
-            <a class="btn" href="javascript:void(0)" id="subbtn1">立即登录</a>
+            <v-touch class="btn"  id="subbtn1" tag="span"
+            @tap='handleLink()' 
+            ><router-link tag="span" :to=path>立即登录</router-link></v-touch>
 
             <!-- 用户账号 登陆模块结束 -->
            <div class="serve clearfix">
@@ -58,6 +70,7 @@
 </div>
 </template>
 <script>
+import axios from "axios"
 export default {
     data(){
         return{
@@ -70,10 +83,59 @@ export default {
                     text:"找回密码",
                     path:"/find"
                 }
-            ]
-            
+            ], 
+            inputUser:"",
+            inputPassword:"",
+            path:"",
+            id:""
         }
-    }
+    },
+    methods:{
+              handleLink(){
+                 let usernames=this.inputUser;
+                let passwords=this.inputPassword;
+                // let path=this.path 
+                // +"&"+"password="+passwords
+                let url="http://localhost:3000/data?username="+usernames+"&"+"password="+passwords;
+                console.log(usernames,passwords,url);                
+                axios({
+                  method:"get",
+                  // url:"http://localhost:3000/data?username="+usernames,
+                  url:url                                          
+                }).then((data)=>{
+                  // console.log(data.data)
+                  // 注册
+                  if(data.data.length===0){
+                    
+                    axios({
+                  method:"post",
+                  url:"http://localhost:3000/data" ,              
+                  data:{
+                    username:usernames,
+                    password:passwords
+                  }                
+                })  
+                  }else{
+                    // console.log(1111)
+                  this.$router.push({name:"home"})
+                  // this.path="/home"
+                  //  跳到home页面的 路径要加个参
+                  }
+                }) 
+              
+
+                       
+                // axios({
+                //   method:"post",
+                //   url:"http://localhost:3000/data" ,              
+                //   data:{
+                //     username:username,
+                //     password:password
+                //   }                
+                // })   
+              }             
+              
+            }
 }
 </script>
 <style>
